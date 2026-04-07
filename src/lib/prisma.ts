@@ -2,12 +2,11 @@ import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-// Inicialização estável para Next.js 15/16 + Vercel
-// Usando 'datasourceUrl' diretamente da variável de ambiente setada no painel
+// Inicialização ultra-limpa e padrão para evitar erros de Build na Vercel
+// O Prisma lerá automaticamente a DATABASE_URL configurada no painel da Vercel
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    datasourceUrl: process.env.DATABASE_URL,
     log: ["error"],
   });
 
