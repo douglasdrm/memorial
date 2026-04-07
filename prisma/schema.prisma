@@ -1,0 +1,200 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum TipoUsuario {
+  VISITANTE
+  FAMILIA
+  ADMIN_PAROQUIA
+  ADMIN_GERAL
+}
+
+enum StatusNicho {
+  DISPONIVEL
+  RESERVADO
+  CONCEDIDO
+}
+
+enum StatusAprovacao {
+  ATIVO
+  PENDENTE
+  CANCELADO
+}
+
+enum StatusMemorial {
+  PUBLICO
+  PRIVADO
+}
+
+enum TipoProduto {
+  VELA
+  FLOR
+}
+
+enum StatusPagamento {
+  PENDENTE
+  PAGO
+  FALHOU
+  REEMBOLSADO
+}
+
+model Usuario {
+  id             String    @id @default(cuid())
+  nome           String
+  email          String    @unique
+  cpf            String?   @unique
+  telefone       String?
+  senhaHash      String?
+  tipo           TipoUsuario @default(VISITANTE)
+  dataCriacao    DateTime  @default(now())
+
+  // Relations
+  paroquiasAdministradas Paroquia[]
+  concessoes             Concessao[]
+  pedidos                Pedido[]
+  homenagens             HomenagemDigital[]
+}
+
+model Paroquia {
+  id         String   @id @default(cuid())
+  nome       String
+  cnpj       String?
+  endereco   String?
+  adminId    String
+  admin      Usuario  @relation(fields: [adminId], references: [id])
+  
+  nichos     Nicho[]
+}
+
+model Nicho {
+  id            String      @id @default(cuid())
+  paroquiaId    String
+  paroquia      Paroquia    @relation(fields: [paroquiaId], references: [id])
+  identificador String      // Ex: "Ala A-01"
+  andar         Int         @default(1)
+  preco         Float?
+  fileira       String?
+  status        StatusNicho @default(DISPONIVEL)
+
+  concessoes    Concessao[]
+}
+
+model Concessao {
+  id              String          @id @default(cuid())
+  nichoId         String
+  nicho           Nicho           @relation(fields: [nichoId], references: [id])
+  familiaId       String
+  familia         Usuario         @relation(fields: [familiaId], references: [id])
+  dataInicio      DateTime        @default(now())
+  dataFim         DateTime?
+  contratoPdfUrl  String?
+  status          StatusAprovacao @default(PENDENTE)
+
+  pagamentos      Pagamento[]
+  memoriais       Memorial[]
+}
+
+model Memorial {
+  id               String         @id @default(cuid())
+  concessaoId      String         @unique
+  concessao        Concessao      @relation(fields: [concessaoId], references: [id])
+  nomeFalecido     String
+  biografia        String?
+  dataNascimento   DateTime?
+  dataFalecimento  DateTime?
+  status           StatusMemorial @default(PRIVADO)
+
+  fotos            FotoMemorial[]
+  mensagens        MensagemMemorial[]
+  homenagens       HomenagemDigital[]
+  pedidosHomenagem Pedido[]
+}
+
+model MensagemMemorial {
+  id           String          @id @default(cuid())
+  memorialId   String
+  memorial     Memorial        @relation(fields: [memorialId], references: [id])
+  autor        String
+  conteudo     String
+  status       StatusAprovacao @default(PENDENTE) // Controlado pela Família
+  dataCriacao  DateTime        @default(now())
+}
+
+model HomenagemDigital {
+  id           String      @id @default(cuid())
+  memorialId   String
+  memorial     Memorial    @relation(fields: [memorialId], references: [id])
+  tipo         TipoProduto // VELA ou FLOR
+  compradorId  String?     // Se logado
+  comprador    Usuario?    @relation(fields: [compradorId], references: [id])
+  nomeExibicao String      // "Acesa por João"
+  expiraEm     DateTime?   // Para velas temporárias
+  pago         Boolean     @default(false)
+  valorPago    Float
+  dataCriacao  DateTime    @default(now())
+}
+
+model InteresseParoquia {
+  id          String   @id @default(cuid())
+  nomeIgreja  String
+  responsavel String
+  email       String
+  telefone    String
+  cidade      String
+  status      String   @default("PENDENTE") // PENDENTE, CONTATADO, ATIVO
+  dataInteresse DateTime @default(now())
+}
+
+model FotoMemorial {
+  id         String   @id @default(cuid())
+  memorialId String
+  memorial   Memorial @relation(fields: [memorialId], references: [id])
+  urlFoto    String
+  ordem      Int      @default(0)
+}
+
+
+model Produto {
+  id         String      @id @default(cuid())
+  nome       String
+  descricao  String?
+  preco      Float
+  tipo       TipoProduto
+  imagemUrl  String?
+
+  pedidos    Pedido[]
+}
+
+model Pedido {
+  id         String   @id @default(cuid())
+  usuarioId  String
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+  memorialId String
+  memorial   Memorial @relation(fields: [memorialId], references: [id])
+  produtoId  String
+  produto    Produto  @relation(fields: [produtoId], references: [id])
+  dataPedido DateTime @default(now())
+
+  pagamentos Pagamento[]
+}
+
+model Pagamento {
+  id           String          @id @default(cuid())
+  concessaoId  String?
+  concessao    Concessao?      @relation(fields: [concessaoId], references: [id])
+  pedidoId     String?
+  pedido       Pedido?         @relation(fields: [pedidoId], references: [id])
+  gatewayId    String?         // ID do Mercado Pago, por exemplo
+  valorTotal   Float
+  parcelas     Int             @default(1)
+  status       StatusPagamento @default(PENDENTE)
+}
