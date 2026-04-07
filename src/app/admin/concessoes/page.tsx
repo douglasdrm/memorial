@@ -57,7 +57,7 @@ export default async function ConcessoesPage() {
                         </td>
                     </tr>
                 ) : (
-                    concessoes.map((c) => (
+                    concessoes.map((c: any) => (
                         <tr key={c.id} className="border-b border-cream-900/10 hover:bg-cream-50/30 transition-colors">
                             <td className="px-8 py-6">
                                 <div className="flex items-center gap-3">

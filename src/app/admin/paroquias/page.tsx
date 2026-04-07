@@ -52,7 +52,7 @@ export default async function ParoquiasAdminPage() {
           </div>
         ) : (
           <div className="divide-y divide-cream-900/30">
-            {paroquias.map((paroquia) => (
+            {paroquias.map((paroquia: any) => (
               <div 
                 key={paroquia.id} 
                 className="p-6 hover:bg-cream-50 transition-colors flex items-center justify-between group cursor-pointer"
