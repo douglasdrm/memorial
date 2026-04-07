@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { Pool } from "pg";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -23,25 +24,42 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.usuario.findUnique({
-          where: { email: credentials.email as string },
+        // Bypass Prisma for authorize to avoid SSL issues on Vercel
+        const pool = new Pool({
+            connectionString: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false }
         });
+        
+        try {
+            const client = await pool.connect();
+            const res = await client.query('SELECT * FROM "Usuario" WHERE email = $1', [credentials.email]);
+            client.release();
+            const user = res.rows[0];
 
-        if (!user || !user.senhaHash) return null;
+            if (!user || !user.senhaHash) {
+                await pool.end();
+                return null;
+            }
 
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user.senhaHash
-        );
+            const isValid = await bcrypt.compare(
+                credentials.password as string,
+                user.senhaHash
+            );
 
-        if (!isValid) return null;
+            await pool.end();
+            if (!isValid) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.nome,
-          role: user.tipo,
-        };
+            return {
+                id: user.id,
+                email: user.email,
+                name: user.nome,
+                role: user.tipo,
+            };
+        } catch (err) {
+            console.error("Erro no authorize (pg bypass):", err);
+            await pool.end();
+            return null;
+        }
       },
     }),
   ],
