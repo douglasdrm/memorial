@@ -15,7 +15,7 @@ export async function createInteresse(formData: FormData) {
   }
 
   try {
-    await prisma.interesseParoquia.create({
+    await (prisma as any).interesseParoquia.create({
       data: {
         nomeIgreja,
         cidade,
