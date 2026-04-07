@@ -1,22 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
-const getDatabaseUrl = () => {
-    const url = process.env.DATABASE_URL || "";
-    if (url && !url.includes("sslmode=")) {
-        return url.includes("?") ? `${url}&sslmode=no-verify` : `${url}?sslmode=no-verify`;
-    }
-    return url;
-};
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
+// Inicialização ultra-simplificada para evitar conflitos de SSL na Vercel
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    log: ['query', 'error', 'warn'],
-    datasources: {
-        db: {
-            url: getDatabaseUrl(),
-        },
-    },
+    log: ["error"],
   });
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
