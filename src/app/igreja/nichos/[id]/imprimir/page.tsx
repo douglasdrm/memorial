@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { generateQRCode } from "@/lib/utils/qrcode";
+import { generateQrDataUrl } from "@/lib/utils/qrcode";
 import Image from "next/image";
 import Link from "next/link";
 import { Printer, ArrowLeft } from "lucide-react";
