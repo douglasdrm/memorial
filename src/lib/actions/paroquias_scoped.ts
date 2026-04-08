@@ -8,7 +8,11 @@ export async function getMyParoquia() {
   if (!user) return null;
 
   return await prisma.paroquia.findFirst({
-    where: { adminId: user.id },
+    where: { 
+      admins: {
+        some: { id: user.id }
+      }
+    },
   });
 }
 

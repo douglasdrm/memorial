@@ -68,7 +68,7 @@ model Usuario {
   dataCriacao    DateTime  @default(now())
 
   // Relations
-  paroquiasAdministradas Paroquia[]
+  paroquiasAdministradas Paroquia[] @relation("ParoquiaAdmins")
   concessoes             Concessao[]
   pedidos                Pedido[]
   homenagens             HomenagemDigital[]
@@ -79,8 +79,9 @@ model Paroquia {
   nome       String
   cnpj       String?
   endereco   String?
-  adminId    String
-  admin      Usuario  @relation(fields: [adminId], references: [id])
+  
+  // Relations
+  admins     Usuario[] @relation("ParoquiaAdmins")
   
   nichos     Nicho[]
 }

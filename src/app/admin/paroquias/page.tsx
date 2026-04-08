@@ -1,4 +1,5 @@
 import { getParoquias } from "@/lib/actions/paroquias";
+import { getPotenciaisAdmins } from "@/lib/actions/usuarios";
 import FormNovaParoquia from "./FormNovaParoquia";
 import Link from "next/link";
 import { 
@@ -11,6 +12,7 @@ import {
 
 export default async function ParoquiasAdminPage() {
   const paroquias = await getParoquias();
+  const adminsDisponiveis = await getPotenciaisAdmins();
 
   return (
     <div className="flex flex-col gap-10 h-full">
@@ -21,7 +23,7 @@ export default async function ParoquiasAdminPage() {
           <h2 className="font-serif text-3xl text-ink-900 font-light tracking-wide">Gestão de Paróquias</h2>
           <p className="text-ink-500 font-medium text-sm">Administre as igrejas e seus respectivos memoriais.</p>
         </div>
-        <FormNovaParoquia />
+        <FormNovaParoquia admins={adminsDisponiveis} />
       </div>
 
       {/* Control Bar */}

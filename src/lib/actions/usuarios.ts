@@ -38,3 +38,23 @@ export async function excluirUsuario(id: string) {
 
   revalidatePath("/admin/usuarios");
 }
+
+export async function getPotenciaisAdmins() {
+  await requireSuperAdmin();
+
+  return await prisma.usuario.findMany({
+    where: {
+      status: "ATIVO",
+      tipo: {
+        in: ["ADMIN_PAROQUIA", "GERENTE", "ADMIN_GERAL"],
+      },
+    },
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      tipo: true,
+    },
+    orderBy: { nome: "asc" },
+  });
+}
