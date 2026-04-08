@@ -11,7 +11,9 @@ import {
   LogOut,
   User,
   Bell,
-  FileText
+  FileText,
+  Users,
+  Grid3X3
 } from "lucide-react";
 
 
@@ -26,7 +28,7 @@ export default async function AdminLayout({
     "use server";
     const supabase = await createClient();
     await supabase.auth.signOut();
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   const menuItems = [
@@ -70,12 +72,7 @@ export default async function AdminLayout({
 
         {/* Logout Section */}
         <div className="p-4 border-t border-cream-900/30">
-          <form
-            action={async () => {
-              "use server";
-              await signOut();
-            }}
-          >
+          <form action={handleSignOut}>
             <button className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-peach-100 rounded-xl transition-all w-full text-left">
               <LogOut className="w-5 h-5" />
               Sair do Sistema
