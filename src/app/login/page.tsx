@@ -1,4 +1,6 @@
 import { signIn } from "@/auth";
+import { redirect } from "next/navigation";
+import { AuthError } from "next-auth";
 
 export default async function LoginPage(props: {
   searchParams: Promise<{ error?: string }>;
@@ -32,17 +34,15 @@ export default async function LoginPage(props: {
           action={async (formData) => {
             "use server";
             try {
-              await signIn("credentials", Object.fromEntries(formData));
-            } catch (error: any) {
-              if (error.type === "CredentialsSignin") {
-                // NextAuth redireciona automaticamente com erro na URL
-                throw error;
+              await signIn("credentials", {
+                email: formData.get("email"),
+                password: formData.get("password"),
+                redirectTo: "/admin",
+              });
+            } catch (error) {
+              if (error instanceof AuthError) {
+                redirect(`/login?error=${error.type}`);
               }
-              // Se for erro de redirecionamento do próprio Next.js (sucesso), deixa passar
-              if (error.message?.includes("NEXT_REDIRECT")) {
-                throw error;
-              }
-              console.error("Erro no login:", error);
               throw error;
             }
           }}
@@ -74,28 +74,6 @@ export default async function LoginPage(props: {
             className="w-full bg-sage-600 text-white rounded-lg py-3.5 mt-2 uppercase text-xs tracking-widest font-bold shadow-md hover:bg-sage-900 transition-colors"
           >
             Entrar no Painel
-          </button>
-        </form>
-
-        <div className="relative flex py-6 items-center">
-            <div className="flex-grow border-t border-cream-900/50"></div>
-            <span className="shrink-0 px-4 text-ink-500 text-xs">ou</span>
-            <div className="flex-grow border-t border-cream-900/50"></div>
-        </div>
-
-        <form
-          action={async () => {
-            "use server";
-            await signIn("google");
-          }}
-        >
-          <button 
-            type="submit"
-            className="w-full bg-white text-ink-900 border border-cream-900/50 rounded-lg py-3 flex items-center justify-center gap-3 uppercase text-xs tracking-widest font-bold hover:bg-cream-50 transition-colors"
-          >
-            {/* Simple Google G */}
-            <span className="font-serif font-bold text-lg leading-none">G</span>
-            Continuar com Google
           </button>
         </form>
 
