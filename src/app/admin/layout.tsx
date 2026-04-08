@@ -32,7 +32,8 @@ export default async function AdminLayout({
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/admin" },
     { name: "Paróquias", icon: Church, href: "/admin/paroquias" },
-    { name: "Concessões", icon: FileText, href: "/admin/concessoes" },
+    { name: "Usuários", icon: Users, href: "/admin/usuarios" },
+    { name: "Nichos/Locais", icon: Grid3X3, href: "/admin/concessoes" },
     { name: "Memoriais", icon: BookOpen, href: "/admin/memoriais" },
     { name: "Pagamentos", icon: CreditCard, href: "/admin/pagamentos" },
   ];
