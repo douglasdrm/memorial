@@ -27,7 +27,7 @@ export default function SolicitarAcessoPage() {
       
       <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-sm border border-cream-900/50 relative z-10">
         
-        <Link href="/login" className="inline-flex items-center text-ink-400 hover:text-ink-900 text-sm mb-8 transition-colors">
+        <Link href="/admin/login" className="inline-flex items-center text-ink-400 hover:text-ink-900 text-sm mb-8 transition-colors">
           <ArrowLeft size={16} className="mr-2" />
           Voltar para o Login
         </Link>

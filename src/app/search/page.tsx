@@ -24,7 +24,7 @@ export default async function SearchResultsPage({
         <div className="text-xs font-bold text-ink-400 uppercase tracking-widest">
             Busca: <span className="text-sage-600">"{query}"</span>
         </div>
-        <Link href="/login" className="text-[10px] font-bold uppercase tracking-widest text-ink-900 hover:text-sage-600 transition">Entrar</Link>
+        <Link href="/portal/login" className="text-[10px] font-bold uppercase tracking-widest text-ink-900 hover:text-sage-600 transition">Entrar</Link>
       </nav>
 
       <main className="max-w-5xl mx-auto py-20 px-6">

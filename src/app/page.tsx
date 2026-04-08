@@ -20,7 +20,7 @@ export default function HomePage() {
             <Link href="#como-funciona" className="text-[10px] uppercase font-bold tracking-widest text-ink-500 hover:text-sage-600 transition">Como Funciona</Link>
             <Link href="#paroquias" className="text-[10px] uppercase font-bold tracking-widest text-ink-500 hover:text-sage-600 transition">Paróquias</Link>
             <Link 
-                href="/login" 
+                href="/portal/login" 
                 className="bg-sage-600 text-white px-6 py-2.5 rounded-xl text-[10px] uppercase font-bold tracking-[0.2em] hover:bg-sage-900 transition-all shadow-md"
             >
                 Acessar Portal

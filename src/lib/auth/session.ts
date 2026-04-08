@@ -15,18 +15,18 @@ export async function getSessionUser() {
   return usuario;
 }
 
-// Exige que o usuário esteja logado. Redireciona para /login se não autenticado.
-export async function requireAuth() {
+// Exige que o usuário esteja logado. 
+export async function requireAuth(targetPortal: "admin" | "igreja" | "portal" = "portal") {
   const usuario = await getSessionUser();
-  if (!usuario) redirect("/login");
+  if (!usuario) redirect(`/${targetPortal}/login`);
   return usuario;
 }
 
 // Exige que o usuário seja ADMIN_GERAL ou GERENTE
 export async function requireAdmin() {
-  const usuario = await requireAuth();
+  const usuario = await requireAuth("admin");
   if (usuario.tipo !== "ADMIN_GERAL" && usuario.tipo !== "GERENTE") {
-    redirect("/login");
+    redirect("/admin/login");
   }
   return usuario;
 }

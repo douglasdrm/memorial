@@ -27,7 +27,7 @@ export default function SucessoSolicitacaoPage() {
         </div>
 
         <Link 
-          href="/login"
+          href="/admin/login"
           className="block w-full bg-sage-600 text-white rounded-lg py-3.5 mt-2 uppercase text-xs tracking-widest font-bold shadow-md hover:bg-sage-900 transition-colors"
         >
           Voltar para o Início

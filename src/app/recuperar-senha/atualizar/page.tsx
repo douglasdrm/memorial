@@ -34,7 +34,7 @@ export default function AtualizarSenhaPage() {
     
     // Redireciona após 3 segundos
     setTimeout(() => {
-      router.push("/login");
+      router.push("/portal/login");
     }, 3000);
   };
 

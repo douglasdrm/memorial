@@ -37,7 +37,7 @@ export default function RecuperarSenhaPage() {
       
       <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-sm border border-cream-900/50 relative z-10">
         
-        <Link href="/login" className="inline-flex items-center text-ink-400 hover:text-ink-900 text-sm mb-8 transition-colors">
+        <Link href="/portal/login" className="inline-flex items-center text-ink-400 hover:text-ink-900 text-sm mb-8 transition-colors">
           <ArrowLeft size={16} className="mr-2" />
           Voltar para o Login
         </Link>
@@ -61,7 +61,7 @@ export default function RecuperarSenhaPage() {
               Verifique sua caixa de entrada e siga as instruções para definir sua nova senha.
             </p>
             <Link 
-              href="/login"
+              href="/portal/login"
               className="mt-6 block w-full bg-sage-600 text-white rounded-lg py-3 text-xs tracking-widest font-bold uppercase"
             >
               Entendido

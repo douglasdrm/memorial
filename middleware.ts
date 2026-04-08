@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
@@ -36,7 +36,13 @@ export async function middleware(request: NextRequest) {
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    if (path.startsWith("/admin")) {
+      url.pathname = "/admin/login";
+    } else if (path.startsWith("/igreja")) {
+      url.pathname = "/igreja/login";
+    } else {
+      url.pathname = "/portal/login";
+    }
     return NextResponse.redirect(url);
   }
 
