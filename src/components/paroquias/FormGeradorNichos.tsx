@@ -78,17 +78,14 @@ export default function FormGeradorNichos({ paroquiaId }: Props) {
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-ink-900 uppercase tracking-widest">Andar (1º ao 6º)</label>
+                  <label className="text-[10px] font-bold text-ink-900 uppercase tracking-widest">Andar de Destino</label>
                   <select 
                     name="andar"
                     className="w-full px-4 py-3 bg-cream-50 border border-cream-900/50 rounded-xl outline-none focus:border-sage-500 focus:bg-white transition"
                   >
-                    <option value="1">1º Andar</option>
-                    <option value="2">2º Andar</option>
-                    <option value="3">3º Andar</option>
-                    <option value="4">4º Andar</option>
-                    <option value="5">5º Andar</option>
-                    <option value="6">6º Andar</option>
+                    {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                        <option key={n} value={n}>{n}º Andar</option>
+                    ))}
                   </select>
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -106,12 +103,13 @@ export default function FormGeradorNichos({ paroquiaId }: Props) {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-ink-900 uppercase tracking-widest">Preço Sugerido (R$)</label>
+                <label className="text-[10px] font-bold text-ink-900 uppercase tracking-widest">Preço para este Andar (R$)</label>
                 <input 
                   name="preco"
                   type="number"
                   step="0.01"
-                  placeholder="Ex: 235.00"
+                  placeholder="Ex: 2500.00"
+                  required
                   className="w-full px-4 py-3 bg-cream-50 border border-cream-900/50 rounded-xl outline-none focus:border-sage-500 focus:bg-white transition"
                 />
               </div>
@@ -132,13 +130,13 @@ export default function FormGeradorNichos({ paroquiaId }: Props) {
                   {isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    "Confirmar Geração"
+                    "Gerar Unidades"
                   )}
                 </button>
               </div>
 
               <p className="text-[10px] text-ink-500 text-center uppercase tracking-widest font-bold opacity-60">
-                A geração será feita em massa no banco de dados.
+                Os nichos serão criados como "Disponíveis" para venda pública.
               </p>
             </form>
           </div>

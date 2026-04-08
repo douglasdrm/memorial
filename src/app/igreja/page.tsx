@@ -111,14 +111,14 @@ export default async function IgrejaDashboard() {
           <div className="flex flex-col gap-6">
                <h3 className="text-xs uppercase font-bold tracking-[0.2em] text-ink-900">Ações Rápidas</h3>
                <div className="flex flex-col gap-3">
-                   <button className="flex items-center justify-between p-6 bg-white border border-cream-900/30 rounded-[2rem] hover:shadow-lg hover:border-sage-300 transition-all font-bold text-xs group">
+                   <Link href="/contratacao" className="flex items-center justify-between p-6 bg-white border border-cream-900/30 rounded-[2rem] hover:shadow-lg hover:border-sage-300 transition-all font-bold text-xs group">
                         <span>Novo Cliente / Contrato</span>
                         <Plus className="w-5 h-5 text-sage-600 group-hover:translate-x-1 transition-transform" />
-                   </button>
-                   <button className="flex items-center justify-between p-6 bg-white border border-cream-900/30 rounded-[2rem] hover:shadow-lg hover:border-sage-300 transition-all font-bold text-xs group">
+                   </Link>
+                   <Link href="/igreja/nichos" className="flex items-center justify-between p-6 bg-white border border-cream-900/30 rounded-[2rem] hover:shadow-lg hover:border-sage-300 transition-all font-bold text-xs group">
                         <span>Gerenciar Nichos</span>
                         <Grid3X3 className="w-5 h-5 text-sage-600 group-hover:translate-x-1 transition-transform" />
-                   </button>
+                   </Link>
                </div>
           </div>
       </div>

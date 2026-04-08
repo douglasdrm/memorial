@@ -1,8 +1,8 @@
 import { getNichosByParoquia, getParoquiaById } from "@/lib/actions/nichos";
 import Link from "next/link";
 import { ChevronLeft, Filter, MapPin } from "lucide-react";
-import FormGeradorNichos from "../../FormGeradorNichos";
-import NichoTile from "../../NichoTile";
+import FormGeradorNichos from "@/components/paroquias/FormGeradorNichos";
+import NichoTile from "@/components/paroquias/NichoTile";
 
 interface Props {
   params: Promise<{ id: string }>;

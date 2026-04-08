@@ -65,8 +65,7 @@ export default function NichoTile({ nicho }: Props) {
   };
 
   const isAvailable = nicho.status === "DISPONIVEL";
-  // Construir a URL do memorial (Base URL + ID da concessão se houver)
-  // No mundo ideal, usamos uma variável de ambiente pro domínio
+  // Construir a URL do memorial
   const memorialUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}/memorial/${nicho.id}` 
     : `/memorial/${nicho.id}`;
@@ -96,7 +95,7 @@ export default function NichoTile({ nicho }: Props) {
             <span className="text-[9px] uppercase font-bold text-ink-500 tracking-widest opacity-60">Andar {nicho.andar}</span>
             <h4 className="font-serif text-lg text-ink-900 leading-none">{nicho.identificador}</h4>
             <span className="text-[10px] font-bold text-sage-900 mt-1">
-                {nicho.preco ? `R$ ${nicho.preco.toFixed(0)}` : '--'}
+                {nicho.preco ? `R$ ${nicho.preco.toLocaleString('pt-BR')}` : '--'}
             </span>
         </div>
       </div>

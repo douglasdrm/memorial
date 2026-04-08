@@ -123,6 +123,7 @@ model Memorial {
   dataNascimento   DateTime?
   dataFalecimento  DateTime?
   status           StatusMemorial @default(PRIVADO)
+  slug             String         @unique
 
   fotos            FotoMemorial[]
   mensagens        MensagemMemorial[]

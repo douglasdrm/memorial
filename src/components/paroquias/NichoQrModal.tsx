@@ -15,13 +15,14 @@ export default function NichoQrModal({ url, identificador }: Props) {
 
   async function handleOpen() {
     setIsOpen(true);
-    // Gerar no cliente se quisermos, ou usar uma action. 
-    // Como já temos a action no lib/utils/qrcode.ts (server side), 
-    // mas aqui estamos num client component, vou usar uma lib client-side ou chamar a action.
-    // Para simplificar agora, vou chamar uma rota de API ou action.
-    const response = await fetch(`/api/qrcode?text=${encodeURIComponent(url)}`);
-    const data = await response.json();
-    setQrData(data.qr);
+    // Chamando a rota de API que gera o QR Code
+    try {
+        const response = await fetch(`/api/qrcode?text=${encodeURIComponent(url)}`);
+        const data = await response.json();
+        setQrData(data.qr);
+    } catch (error) {
+        console.error("Erro ao gerar QR Code:", error);
+    }
   }
 
   return (
