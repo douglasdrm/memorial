@@ -1,14 +1,11 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/session";
 import { revalidatePath } from "next/cache";
 
 export async function createParoquia(formData: FormData) {
-  const session = await auth();
-  if (!session || !session.user) {
-    throw new Error("Não autorizado");
-  }
+  const user = await requireAuth();
 
   const nome = formData.get("nome") as string;
   const cnpj = formData.get("cnpj") as string;

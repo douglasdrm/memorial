@@ -1,4 +1,5 @@
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth/session";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { 
@@ -19,9 +20,12 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const user = await requireAdmin();
 
-  if (!session) {
+  async function handleSignOut() {
+    "use server";
+    const supabase = await createClient();
+    await supabase.auth.signOut();
     redirect("/login");
   }
 
@@ -95,13 +99,11 @@ export default async function AdminLayout({
             
             <div className="flex items-center gap-3 border-l border-cream-900/30 pl-6 text-right">
               <div className="flex flex-col">
-                <span className="text-sm font-bold text-ink-900">{session.user?.name || "Administrador"}</span>
-                <span className="text-[10px] uppercase font-bold text-sage-600 tracking-widest leading-none">
-                  {(session.user as any)?.role || "Admin"}
-                </span>
+                <p className="text-sm font-bold text-ink-900">{user.nome}</p>
+                <p className="text-[10px] text-ink-500 uppercase font-bold tracking-widest">{user.tipo}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-sage-100 border border-sage-200 flex items-center justify-center text-sage-600 font-bold">
-                {session.user?.name?.[0] || <User className="w-5 h-5" />}
+                {user.nome?.charAt(0) || <User className="w-5 h-5" />}
               </div>
             </div>
           </div>

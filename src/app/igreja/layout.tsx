@@ -1,5 +1,6 @@
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { 
   LayoutDashboard, 
@@ -17,9 +18,16 @@ export default async function IgrejaLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const user = await requireAuth();
 
-  if (!session || (session.user as any).role !== "ADMIN_PAROQUIA" && (session.user as any).role !== "ADMIN_GERAL") {
+  async function handleSignOut() {
+    "use server";
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    redirect("/login");
+  }
+
+  if (user.tipo !== "ADMIN_PAROQUIA" && user.tipo !== "ADMIN_GERAL") {
     redirect("/login");
   }
 
@@ -61,16 +69,18 @@ export default async function IgrejaLayout({
         <div className="mt-auto flex flex-col gap-4">
             <div className="p-6 bg-sage-900 rounded-3xl text-white flex flex-col gap-2">
                 <span className="text-[9px] uppercase font-bold tracking-[0.2em] opacity-50">Logado como paróquia</span>
-                <span className="text-sm font-medium truncate">{session.user?.name}</span>
+                <span className="text-sm font-medium truncate">{user.nome}</span>
             </div>
             
-            <Link
-              href="/api/auth/signout"
-              className="flex items-center gap-4 px-6 py-4 rounded-2xl text-red-400 hover:bg-red-50 transition-all group"
-            >
-              <LogOut className="w-5 h-5" />
-              <span className="text-[10px] uppercase font-bold tracking-widest">Sair do Painel</span>
-            </Link>
+            <form action={handleSignOut}>
+                <button
+                    type="submit"
+                    className="flex w-full items-center gap-4 px-6 py-4 rounded-2xl text-red-400 hover:bg-red-50 transition-all group"
+                >
+                    <LogOut className="w-5 h-5" />
+                    <span className="text-[10px] uppercase font-bold tracking-widest">Sair do Painel</span>
+                </button>
+            </form>
         </div>
       </aside>
 

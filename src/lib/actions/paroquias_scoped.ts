@@ -1,14 +1,14 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { getSessionUser } from "@/lib/auth/session";
 
 export async function getMyParoquia() {
-  const session = await auth();
-  if (!session) return null;
+  const user = await getSessionUser();
+  if (!user) return null;
 
   return await prisma.paroquia.findFirst({
-    where: { adminId: session.user?.id },
+    where: { adminId: user.id },
   });
 }
 

@@ -17,7 +17,14 @@ enum TipoUsuario {
   VISITANTE
   FAMILIA
   ADMIN_PAROQUIA
+  GERENTE
   ADMIN_GERAL
+}
+
+enum StatusUsuario {
+  ATIVO
+  PENDENTE
+  SUSPENSO
 }
 
 enum StatusNicho {
@@ -57,6 +64,7 @@ model Usuario {
   telefone       String?
   senhaHash      String?
   tipo           TipoUsuario @default(VISITANTE)
+  status         StatusUsuario @default(ATIVO)
   dataCriacao    DateTime  @default(now())
 
   // Relations

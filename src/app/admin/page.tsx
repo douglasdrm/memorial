@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getSessionUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { 
   Church, 
@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 export default async function AdminDashboard() {
-  const session = await auth();
+  const user = await getSessionUser();
 
   // Fetching real stats from the database
   const countParoquias = await prisma.paroquia.count();
@@ -26,7 +26,7 @@ export default async function AdminDashboard() {
       
       {/* Header / Welcome Area */}
       <div className="flex flex-col gap-1">
-        <h2 className="font-serif text-3xl text-ink-900 font-light">Olá, {session?.user?.name || "Administrador"}</h2>
+        <h2 className="font-serif text-3xl text-ink-900 font-light">Olá, {user?.nome || "Administrador"}</h2>
         <p className="text-ink-500 font-medium tracking-wide">Bem-vindo ao centro de comando do Memorial Paroquial.</p>
       </div>
 

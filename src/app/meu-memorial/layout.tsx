@@ -1,6 +1,7 @@
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { 
   Heart, 
   MessageSquare, 
@@ -16,9 +17,16 @@ export default async function FamiliaLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const user = await requireAuth();
 
-  if (!session || (session.user as any).role !== "FAMILIA" && (session.user as any).role !== "ADMIN_GERAL") {
+  async function handleSignOut() {
+    "use server";
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    redirect("/login");
+  }
+
+  if (user.tipo !== "FAMILIA" && user.tipo !== "ADMIN_GERAL") {
     redirect("/login");
   }
 
@@ -42,14 +50,16 @@ export default async function FamiliaLayout({
         <div className="flex items-center gap-6">
             <div className="flex flex-col text-right">
                 <span className="text-[10px] uppercase font-bold text-ink-400 tracking-widest">Bem-vindo(a)</span>
-                <span className="text-sm font-medium text-ink-900">{session.user?.name}</span>
+                <span className="text-sm font-medium text-ink-900">{user.nome}</span>
             </div>
-            <Link 
-                href="/api/auth/signout" 
-                className="p-3 bg-white border border-peach-900/20 rounded-full hover:bg-red-50 text-red-400 transition shadow-sm"
-            >
-                <LogOut className="w-5 h-5" />
-            </Link>
+            <form action={handleSignOut}>
+                <button 
+                    type="submit"
+                    className="p-3 bg-white border border-peach-900/20 rounded-full hover:bg-red-50 text-red-400 transition shadow-sm"
+                >
+                    <LogOut className="w-5 h-5" />
+                </button>
+            </form>
         </div>
       </nav>
 

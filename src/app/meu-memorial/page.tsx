@@ -1,15 +1,12 @@
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { 
   Heart, 
   MessageSquare, 
   Check, 
   X, 
-  Eye, 
   Calendar,
-  Clock,
-  ExternalLink,
-  Edit2
+  ExternalLink
 } from "lucide-react";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
@@ -30,8 +27,8 @@ async function getMyMemoriais(userId: string) {
 }
 
 export default async function FamiliaDashboard() {
-  const session = await auth();
-  const memoriais = await getMyMemoriais(session?.user?.id as string);
+  const user = await requireAuth();
+  const memoriais = await getMyMemoriais(user.id);
 
   async function updateMessageStatus(formData: FormData) {
       "use server";
