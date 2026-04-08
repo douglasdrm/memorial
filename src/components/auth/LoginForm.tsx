@@ -70,7 +70,14 @@ export default function LoginForm({
       return;
     }
 
-    router.push(redirectPath);
+    // Redirecionamento Inteligente baseado no papel
+    if (perfil.tipo === "ADMIN_GERAL" || perfil.tipo === "GERENTE") {
+      router.push("/admin");
+    } else if (perfil.tipo === "ADMIN_PAROQUIA") {
+      router.push("/igreja");
+    } else {
+      router.push("/meu-memorial");
+    }
   };
 
   return (
