@@ -29,10 +29,11 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
+  const isAuthPage = path.endsWith("/login") || path.startsWith("/api/auth");
   const isProtected =
-    path.startsWith("/admin") ||
+    (path.startsWith("/admin") ||
     path.startsWith("/igreja") ||
-    path.startsWith("/meu-memorial");
+    path.startsWith("/meu-memorial")) && !isAuthPage;
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
