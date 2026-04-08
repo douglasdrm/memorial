@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import { authConfig } from "./auth.config";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { Pool } from "pg";
+import { prisma } from "@/lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -16,21 +16,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const pool = new Pool({
-          connectionString: process.env.DATABASE_URL,
-          ssl: { rejectUnauthorized: false },
-        });
-
         try {
-          const client = await pool.connect();
-          const res = await client.query(
-            'SELECT * FROM "Usuario" WHERE email = $1',
-            [credentials.email]
-          );
-          client.release();
-          await pool.end();
+          const user = await prisma.usuario.findUnique({
+            where: { email: credentials.email as string },
+          });
 
-          const user = res.rows[0];
           if (!user || !user.senhaHash) return null;
 
           const isValid = await bcrypt.compare(
@@ -48,7 +38,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           };
         } catch (err) {
           console.error("Erro no authorize:", err);
-          await pool.end().catch(() => {});
           return null;
         }
       },
