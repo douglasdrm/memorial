@@ -11,14 +11,25 @@ export default async function AdminDashboard() {
   const user = await getSessionUser();
 
   // Fetching real stats from the database
-  const countParoquias = await prisma.paroquia.count();
-  const countNichos = await prisma.nicho.count();
-  const countMemoriais = await prisma.memorial.count();
+  const countParoquias = await prisma.paroquia.count().catch(() => 0);
+  const countNichos = await prisma.nicho.count().catch(() => 0);
+  const countMemoriais = await prisma.memorial.count().catch(() => 0);
+  
+  // Safe fetch for leads
+  let leads = [];
+  try {
+    leads = await (prisma as any).interesseParoquia.findMany({ 
+      take: 5, 
+      orderBy: { dataInteresse: 'desc' } 
+    });
+  } catch (e) {
+    console.error("Erro ao buscar leads:", e);
+  }
 
   const stats = [
-    { name: "Total de Paróquias", value: countParoquias, icon: Church, color: "text-sage-600", bg: "bg-sage-50", change: "+12%" },
-    { name: "Nichos Gerenciados", value: countNichos, icon: Grip, color: "text-ink-900", bg: "bg-cream-50", change: "+5% " },
-    { name: "Memoriais Ativos", value: countMemoriais, icon: Users, color: "text-peach-900", bg: "bg-peach-50", change: "+3%" },
+    { name: "Total de Paróquias", value: countParoquias, icon: Church, color: "text-sage-600", bg: "bg-sage-50", change: "+0%" },
+    { name: "Nichos Gerenciados", value: countNichos, icon: Grip, color: "text-ink-900", bg: "bg-cream-50", change: "+0% " },
+    { name: "Memoriais Ativos", value: countMemoriais, icon: Users, color: "text-peach-900", bg: "bg-peach-50", change: "+0%" },
   ];
 
   return (
@@ -60,14 +71,14 @@ export default async function AdminDashboard() {
             <span className="text-[10px] font-bold text-sage-600 bg-sage-50 px-2 py-1 rounded tracking-widest uppercase">Novos Contatos</span>
           </div>
           
-          {!(prisma as any).interesseParoquia || (await (prisma as any).interesseParoquia.count()) === 0 ? (
+          {leads.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-ink-500 gap-4 grayscale">
               <div className="w-20 h-20 bg-cream-50 rounded-full flex items-center justify-center opacity-50 text-2xl">📋</div>
               <p className="text-sm font-medium">Nenhum interesse registrado no site ainda.</p>
             </div>
           ) : (
              <div className="flex flex-col gap-4">
-                {(await (prisma as any).interesseParoquia.findMany({ take: 5, orderBy: { dataInteresse: 'desc' } })).map((lead: any) => (
+                {leads.map((lead: any) => (
                     <div key={lead.id} className="flex items-center justify-between p-4 border border-cream-900/10 rounded-2xl hover:bg-cream-50/50 transition font-sans">
                          <div className="flex flex-col gap-0.5">
                              <span className="text-sm font-bold text-ink-900">{lead.nomeIgreja}</span>
