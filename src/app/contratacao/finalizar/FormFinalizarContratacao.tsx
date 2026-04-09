@@ -11,7 +11,32 @@ interface Props {
 
 export default function FormFinalizarContratacao({ nichoId }: Props) {
   const [isPending, setIsPending] = useState(false);
+  const [cpf, setCpf] = useState("");
+  const [phone, setPhone] = useState("");
   const router = useRouter();
+
+  // Função para aplicar máscara de CPF: 000.000.000-00
+  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, ""); // Remove não-números
+    if (value.length > 11) value = value.slice(0, 11);
+    
+    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    
+    setCpf(value);
+  };
+
+  // Função para aplicar máscara de Telefone: (00) 00000-0000
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 11) value = value.slice(0, 11);
+    
+    value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
+    value = value.replace(/(\d{5})(\d)/, "$1-$2");
+    
+    setPhone(value);
+  };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,9 +47,9 @@ export default function FormFinalizarContratacao({ nichoId }: Props) {
       if (result?.success && result.redirectUrl) {
           router.push(result.redirectUrl);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Houve um erro ao processar sua solicitação.");
+      alert(error.message || "Houve um erro ao processar sua solicitação.");
     } finally {
       setIsPending(false);
     }
@@ -59,11 +84,25 @@ export default function FormFinalizarContratacao({ nichoId }: Props) {
             </div>
             <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold text-ink-900 uppercase tracking-widest">CPF / Identidade</label>
-                <input name="familia_cpf" required className="w-full px-4 py-3 bg-cream-50 border border-cream-900/50 rounded-xl outline-none focus:border-sage-500 transition" />
+                <input 
+                    name="familia_cpf" 
+                    value={cpf}
+                    onChange={handleCpfChange}
+                    placeholder="000.000.000-00"
+                    required 
+                    className="w-full px-4 py-3 bg-cream-50 border border-cream-900/50 rounded-xl outline-none focus:border-sage-500 transition" 
+                />
             </div>
             <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold text-ink-900 uppercase tracking-widest">WhatsApp / Telefone</label>
-                <input name="familia_telefone" required className="w-full px-4 py-3 bg-cream-50 border border-cream-900/50 rounded-xl outline-none focus:border-sage-500 transition" />
+                <input 
+                    name="familia_telefone" 
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    placeholder="(00) 00000-0000"
+                    required 
+                    className="w-full px-4 py-3 bg-cream-50 border border-cream-900/50 rounded-xl outline-none focus:border-sage-500 transition" 
+                />
             </div>
         </div>
       </div>

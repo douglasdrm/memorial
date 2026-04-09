@@ -7,11 +7,11 @@ import { redirect } from "next/navigation";
 export async function finalizarContratacao(formData: FormData) {
   const nichoId = formData.get("nichoId") as string;
   
-  // Dados da Família
+  // Dados da Família (Limpando máscaras antes de salvar)
   const nomeFamilia = formData.get("familia_nome") as string;
   const emailFamilia = formData.get("familia_email") as string;
-  const cpfFamilia = formData.get("familia_cpf") as string;
-  const telefoneFamilia = formData.get("familia_telefone") as string;
+  const cpfFamilia = (formData.get("familia_cpf") as string)?.replace(/\D/g, ""); // Remove tudo que não for número
+  const telefoneFamilia = (formData.get("familia_telefone") as string)?.replace(/\D/g, "");
 
   // Dados do Falecido (Opcional se for compra antecipada)
   const nomeFalecido = formData.get("falecido_nome") as string;
@@ -22,24 +22,30 @@ export async function finalizarContratacao(formData: FormData) {
     throw new Error("Dados obrigatórios faltando.");
   }
 
-  // 1. Criar ou Encontrar Usuário (Família)
-  // Nota: Em um sistema real, aqui dispararíamos o convite de senha do Supabase
-  let usuario = await prisma.usuario.findUnique({
-    where: { email: emailFamilia },
-  });
+  // 0. Verificar se o nicho já está ocupado por outra concessão ativa
+  const nichoCheck = await prisma.nicho.findUnique({ where: { id: nichoId } });
+  if (nichoCheck?.status === "CONCEDIDO" || nichoCheck?.status === "RESERVADO") {
+      throw new Error("Este nicho já foi reservado ou ocupado.");
+  }
 
-  if (!usuario) {
-    usuario = await prisma.usuario.create({
-      data: {
+  // 1. Criar ou Atualizar Usuário (Família) - Usando Upsert para evitar erro de duplicidade
+  // Buscamos pelo e-mail e garantimos que o CPF/Nome sejam atualizados se necessário
+  const usuario = await prisma.usuario.upsert({
+    where: { email: emailFamilia },
+    update: {
+        nome: nomeFamilia,
+        cpf: cpfFamilia,
+        telefone: telefoneFamilia,
+    },
+    create: {
         email: emailFamilia,
         nome: nomeFamilia,
         cpf: cpfFamilia,
         telefone: telefoneFamilia,
         tipo: "FAMILIA",
-        status: "ATIVO", // Para simplificar o teste inicial
-      },
-    });
-  }
+        status: "ATIVO",
+    },
+  });
 
   // 2. Criar Concessão
   const concessao = await prisma.concessao.create({
