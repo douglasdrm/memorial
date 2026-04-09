@@ -72,6 +72,9 @@ export async function finalizarContratacao(formData: FormData) {
   revalidatePath("/contratacao");
   revalidatePath("/admin");
   
-  // Redirecionar para página de sucesso/recibo
-  redirect(`/contratacao/sucesso?id=${concessao.id}`);
+  // Retornar o link para o cliente redirecionar (evita erro de digest no try/catch)
+  return { 
+    success: true, 
+    redirectUrl: `/contratacao/sucesso?id=${concessao.id}` 
+  };
 }

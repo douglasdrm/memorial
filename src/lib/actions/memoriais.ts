@@ -3,6 +3,26 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
+export async function getPublicMemorial(identifier: string) {
+  return await prisma.memorial.findFirst({
+    where: {
+      OR: [
+        { id: identifier },
+        { slug: identifier }
+      ]
+    },
+    include: {
+      fotos: { orderBy: { ordem: "asc" } },
+      mensagens: true,
+      concessao: {
+        include: {
+          nicho: { include: { paroquia: true } },
+        }
+      }
+    }
+  });
+}
+
 export async function getMemorialByConcessao(concessaoId: string) {
   return await prisma.memorial.findUnique({
     where: { concessaoId },

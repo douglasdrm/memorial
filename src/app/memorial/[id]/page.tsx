@@ -8,12 +8,14 @@ import {
   Share2, 
   ChevronRight,
   User,
-  Clock
+  Clock,
+  Lock
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import TributeForm from "./TributeForm";
+import { getPublicMemorial } from "@/lib/actions/memoriais";
 import { getActiveHomenagens } from "@/lib/actions/homenagens_interativas";
 
 interface Props {
@@ -22,9 +24,27 @@ interface Props {
 
 export default async function PublicMemorialPage({ params }: Props) {
   const { id } = await params;
-  const memorial = await getMemorialByConcessao(id);
+  const memorial = await getPublicMemorial(id);
 
   if (!memorial) return notFound();
+
+  // Verificar Privacidade
+  const isPrivado = memorial.status === "PRIVADO";
+  
+  if (isPrivado) {
+    return (
+        <div className="min-h-screen bg-cream-500 flex flex-col items-center justify-center p-6 text-center gap-6">
+            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-peach-500 shadow-xl">
+                <Lock className="w-8 h-8" />
+            </div>
+            <div className="flex flex-col gap-2">
+                <h1 className="font-serif text-3xl text-ink-900">Memorial Privado</h1>
+                <p className="text-sm text-ink-500 max-w-sm">Esta homenagem está sendo preparada pela família e será publicada em breve.</p>
+            </div>
+            <Link href="/" className="text-[10px] uppercase font-bold tracking-widest text-ink-400 hover:text-sage-600 transition">Voltar ao Início</Link>
+        </div>
+    );
+  }
 
   const activeHomenagens = await getActiveHomenagens(memorial.id);
   const approvedMessages = memorial.mensagens.filter(m => m.status === "APROVADO");
@@ -146,10 +166,32 @@ export default async function PublicMemorialPage({ params }: Props) {
                            Trajetória e Lembranças
                            <div className="flex-1 h-[1px] bg-cream-900/30"></div>
                         </h3>
-                        <p className="text-lg md:text-2xl text-ink-800 font-serif italic leading-[1.6] whitespace-pre-wrap">
-                            "{memorial.biografia || "Recordamos com carinho a trajetório e os valores deixados por esta pessoa tão amada."}"
+                        <p className="text-lg md:text-2xl text-ink-800 font-serif italic leading-[1.6] whitespace-pre-wrap mb-16">
+                            "{memorial.biografia || "Recordamos com carinho a trajetória e os valores deixados por esta pessoa tão amada."}"
                         </p>
                     </div>
+
+                    {/* Image Gallery (Mural de Fotos) */}
+                    {memorial.fotos.length > 1 && (
+                        <div className="flex flex-col gap-8 animate-in fade-in duration-1000 delay-700">
+                             <h3 className="text-[10px] font-bold text-ink-900 uppercase tracking-[0.3em] flex items-center gap-4">
+                                Mural de Lembranças
+                                <div className="flex-1 h-[1px] bg-cream-900/30"></div>
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {memorial.fotos.slice(1).map((f: any, idx: number) => (
+                                    <div key={f.id} className={`relative aspect-square rounded-[2rem] overflow-hidden border-2 border-white shadow-lg transition-transform hover:scale-105 ${idx % 3 === 1 ? 'md:translate-y-6' : ''}`}>
+                                        <Image 
+                                            src={f.urlFoto}
+                                            alt={`Foto ${idx + 2}`}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Condolences Board (Filtered) */}
                     {approvedMessages.length > 0 && (

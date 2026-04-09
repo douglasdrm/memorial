@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2, CheckCircle2, Heart, User } from "lucide-react";
 import { finalizarContratacao } from "@/lib/actions/contratacao";
 
@@ -10,13 +11,17 @@ interface Props {
 
 export default function FormFinalizarContratacao({ nichoId }: Props) {
   const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsPending(true);
     const formData = new FormData(e.currentTarget);
     try {
-      await finalizarContratacao(formData);
+      const result = await finalizarContratacao(formData);
+      if (result?.success && result.redirectUrl) {
+          router.push(result.redirectUrl);
+      }
     } catch (error) {
       console.error(error);
       alert("Houve um erro ao processar sua solicitação.");

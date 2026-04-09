@@ -1,35 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Check, Info } from "lucide-react";
 
 interface Props {
   nichosPorAndar: any;
   paroquiaId: string;
+  onSelect: (nicho: any) => void;
+  selectedId?: string;
 }
 
-export default function NicheSelectionMap({ nichosPorAndar, paroquiaId }: Props) {
-  const [selectedNicho, setSelectedNicho] = useState<any>(null);
-
-  // Sincronizar com a barra lateral do pai (estamos usando IDs no HTML para simplificar sem subir estado complexo)
-  useEffect(() => {
-    const detailArea = document.getElementById("selection-details");
-    const labelNicho = document.getElementById("label-nicho");
-    const labelAndar = document.getElementById("label-andar");
-    const labelPreco = document.getElementById("label-preco");
-    const btnContinuar = document.getElementById("btn-continuar") as HTMLAnchorElement;
-
-    if (!selectedNicho) {
-        detailArea?.classList.add("hidden");
-    } else {
-        detailArea?.classList.remove("hidden");
-        if (labelNicho) labelNicho.innerText = selectedNicho.identificador;
-        if (labelAndar) labelAndar.innerText = `${selectedNicho.andar}º Andar`;
-        if (labelPreco) labelPreco.innerText = `R$ ${selectedNicho.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-        if (btnContinuar) btnContinuar.href = `/contratacao/finalizar?nichoId=${selectedNicho.id}`;
-    }
-  }, [selectedNicho]);
-
+export default function NicheSelectionMap({ nichosPorAndar, paroquiaId, onSelect, selectedId }: Props) {
   return (
     <div className="flex flex-col gap-12">
       {Object.entries(nichosPorAndar).sort((a, b) => Number(b[0]) - Number(a[0])).map(([andar, nichos]: [string, any]) => (
@@ -42,14 +22,14 @@ export default function NicheSelectionMap({ nichosPorAndar, paroquiaId }: Props)
 
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3">
             {nichos.map((nicho: any) => {
-              const isOcupado = nicho.status === "OCUPADO";
-              const isSelected = selectedNicho?.id === nicho.id;
+              const isOcupado = nicho.status === "OCUPADO" || nicho.status === "CONCEDIDO";
+              const isSelected = selectedId === nicho.id;
 
               return (
                 <button
                   key={nicho.id}
                   disabled={isOcupado}
-                  onClick={() => setSelectedNicho(nicho)}
+                  onClick={() => onSelect(nicho)}
                   className={`
                     aspect-square rounded-xl border-2 flex flex-col items-center justify-center gap-0.5 transition-all relative group
                     ${isOcupado 
